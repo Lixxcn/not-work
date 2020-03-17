@@ -11,7 +11,6 @@ public class CopyTest extends Demo{
         BufferedImage bi=file2img(str1);
         BufferedImage bii=img_tailor(bi,0,0,1560,2400);
         img2file(bii,"jpg", str2);
-        System.out.println("test");
 
 
 //        copyFile("F:\\java-test\\in\\01_001.jpg","F:\\java-test\\out2");
