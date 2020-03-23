@@ -1,11 +1,20 @@
 package thread;
 
 import java.lang.annotation.Target;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 
 public class ThreadsTest {
 
     public static void main(String[] args) throws InterruptedException {
-        int i = 4;
+
+        int i = 7;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("执行哪个功能：");
+        i = scanner.nextInt();
         switch (i){
             case 0:
                 //线程创建
@@ -31,10 +40,72 @@ public class ThreadsTest {
                 //中断线程3
                 test5();
                 break;
+            case 6:
+                //守护线程
+                test6();
+                break;
+            case 7:
+                //线程同步
+                test7();
+                break;
+             case 8:
+                //线程同步
+                test8();
+                break;
              default:
                  System.out.println("执行完毕");
 
         }
+    }
+    static void test8() throws InterruptedException {
+        var q = new TaskQueue();
+        var ts = new ArrayList<Thread>();
+        for (int i=0; i<5; i++) {
+            var t = new Thread() {
+                public void run() {
+                    // 执行task:
+                    while (true) {
+                        try {
+                            String s = q.getTask();
+                            System.out.println("execute task: " + s);
+                        } catch (InterruptedException e) {
+                            return;
+                        }
+                    }
+                }
+            };
+            t.start();
+            ts.add(t);
+        }
+        var add = new Thread(() -> {
+            for (int i=0; i<10; i++) {
+                // 放入task:
+                String s = "t-" + Math.random();
+                System.out.println("add task: " + s);
+                q.addTask(s);
+                try { Thread.sleep(100); } catch(InterruptedException e) {}
+            }
+        });
+        add.start();
+        add.join();
+        Thread.sleep(100);
+        for (var t : ts) {
+            t.interrupt();
+        }
+    }
+    static void test7() throws InterruptedException {
+        var add = new AddThread();
+        var dec = new DecThread();
+        add.start();
+        dec.start();
+        add.join();
+        dec.join();
+        System.out.println(Counter.count);
+    }
+    static void test6(){
+        TimerThread t = new TimerThread();
+        t.setDaemon(true);
+        t.start();
     }
     static void test5() throws InterruptedException {
         HelloThread1 t = new HelloThread1();
@@ -165,5 +236,78 @@ class HelloThread1 extends Thread {
             System.out.println(n + " hello!");
         }
         System.out.println("end!");
+    }
+}
+class TimerThread extends Thread {
+    @Override
+    public void run() {
+        while (true) {
+            System.out.println(LocalTime.now());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+}
+
+//没有同步的情况
+//class Counter {
+//    public static int count = 0;
+//}
+//
+//class AddThread extends Thread {
+//    public void run() {
+////        for (int i=0; i<10000; i++) { Counter.count += 1; }
+//        for (int i=0; i<10000; i++) { Counter.count ++; }
+//    }
+//}
+//
+//class DecThread extends Thread {
+//    public void run() {
+////        for (int i=0; i<10000; i++) { Counter.count -= 1; }
+//        for (int i=0; i<10000; i++) { Counter.count --; }
+//    }
+//}
+
+//同步了的情况
+class Counter {
+    public static final Object lock = new Object();
+    public static int count = 0;
+}
+
+class AddThread extends Thread {
+    public void run() {
+        for (int i=0; i<10000; i++) {
+            synchronized(Counter.lock) {
+                Counter.count += 1;
+            }
+        }
+    }
+}
+
+class DecThread extends Thread {
+    public void run() {
+        for (int i=0; i<10000; i++) {
+            synchronized(Counter.lock) {
+                Counter.count -= 1;
+            }
+        }
+    }
+}
+class TaskQueue {
+    Queue<String> queue = new LinkedList<>();
+
+    public synchronized void addTask(String s) {
+        this.queue.add(s);
+        this.notifyAll();
+    }
+
+    public synchronized String getTask() throws InterruptedException {
+        while (queue.isEmpty()) {
+            this.wait();
+        }
+        return queue.remove();
     }
 }
