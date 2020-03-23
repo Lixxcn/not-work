@@ -15,47 +15,70 @@ public class ThreadsTest {
         Scanner scanner = new Scanner(System.in);
         System.out.println("执行哪个功能：");
         i = scanner.nextInt();
-        switch (i){
-            case 0:
-                //线程创建
-                test0();
-                break;
-            case 1:
-                //主线程与线程先后没有关系
-                test1();
-                break;
-            case 2:
-                //join
-                test2();
-                break;
-            case 3:
-                //中断线程1
-                test3();
-                break;
-            case 4:
-                //中断线程2
-                test4();
-                break;
-            case 5:
-                //中断线程3
-                test5();
-                break;
-            case 6:
-                //守护线程
-                test6();
-                break;
-            case 7:
-                //线程同步
-                test7();
-                break;
-             case 8:
-                //线程同步
-                test8();
-                break;
-             default:
-                 System.out.println("执行完毕");
-
+        while (i != -1){
+            switch (i) {
+                case 0:
+                    //线程创建
+                    test0();
+                    break;
+                case 1:
+                    //主线程与线程先后没有关系
+                    test1();
+                    break;
+                case 2:
+                    //join
+                    test2();
+                    break;
+                case 3:
+                    //中断线程1
+                    test3();
+                    break;
+                case 4:
+                    //中断线程2
+                    test4();
+                    break;
+                case 5:
+                    //中断线程3
+                    test5();
+                    break;
+                case 6:
+                    //守护线程
+                    test6();
+                    break;
+                case 7:
+                    //线程同步
+                    test7();
+                    break;
+                case 8:
+                    //线程同步
+                    test8();
+                    break;
+                case 9:
+                    //使用ThreadLocal
+                    test9();
+                    break;
+                default:
+                    System.out.println("执行完毕");
+            }
+            Thread.sleep(2000);
+            System.out.println("执行哪个功能：");
+            i = scanner.nextInt();
         }
+        System.out.println("---end---");
+
+    }
+    static void test9(){
+        log("start main...");
+        new Thread(() -> {
+            log("run task...");
+        }).start();
+        new Thread(() -> {
+            log("print...");
+        }).start();
+        log("end main.");
+    }
+    static void log(String s) {
+        System.out.println(Thread.currentThread().getName() + ": " + s);
     }
     static void test8() throws InterruptedException {
         var q = new TaskQueue();
@@ -311,3 +334,4 @@ class TaskQueue {
         return queue.remove();
     }
 }
+
