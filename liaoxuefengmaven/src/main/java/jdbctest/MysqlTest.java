@@ -1,6 +1,11 @@
 package jdbctest;
 
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +24,24 @@ public class MysqlTest {
 //        } catch (ClassNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        int i = 3;
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(jdbcUsername);
+        config.setPassword(jdbcPassword);
+        config.addDataSourceProperty("connectionTimeout", "1000"); // 连接超时：1秒
+        config.addDataSourceProperty("idleTimeout", "60000"); // 空闲超时：60秒
+        config.addDataSourceProperty("maximumPoolSize", "10"); // 最大连接数：10
+        DataSource ds = new HikariDataSource(config);
+        try(Connection connection = ds.getConnection()){
+            try(PreparedStatement ps = connection.prepareStatement(" select count(*) from students")){
+                ResultSet result = ps.executeQuery();
+                while (result.next()) {
+                    System.out.println(result.getInt(1));
+                }
+            }
+        }
+
+        int i = 0;
         switch (i){
             case 1:
                 List<Student> students = queryStudentsAll();
@@ -211,7 +233,7 @@ public class MysqlTest {
     }
 
 //    static final String jdbcUrl = "jdbc:mysql://localhost:3306/learnjdbc?useSSL=true&characterEncoding=utf8&serverTimezone=UTC";
-    static final String jdbcUrl = "jdbc:mysql://localhost:3306/learnjdbc?useSSL=true&characterEncoding=utf8&serverTimezone=UTC&rewriteBatchedStatements=true";//Batch批量插入
+    static final String jdbcUrl = "jdbc:mysql://localhost:3306/learnjdbc?useSSL=false&characterEncoding=utf8&serverTimezone=UTC&rewriteBatchedStatements=true";//Batch批量插入
     static final String jdbcUsername = "learn";
     static final String jdbcPassword = "learnpassword";
 //    static final String jdbcUsername = "root";
