@@ -232,6 +232,7 @@ public class MysqlTest {
         return std;
     }
 
+    //之前一直用的useSSL=true运行没问题，加线程池后就一直报错。现在改为false，可以正常运行。就很迷，之前明明可以的。。2020年3月24日20:50:40
 //    static final String jdbcUrl = "jdbc:mysql://localhost:3306/learnjdbc?useSSL=true&characterEncoding=utf8&serverTimezone=UTC";
     static final String jdbcUrl = "jdbc:mysql://localhost:3306/learnjdbc?useSSL=false&characterEncoding=utf8&serverTimezone=UTC&rewriteBatchedStatements=true";//Batch批量插入
     static final String jdbcUsername = "learn";
