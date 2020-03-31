@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--    &lt;!&ndash; 配置账户的持久层&ndash;&gt;-->
+<!--    <bean id="accountDao" class="com.itheima.dao.impl.AccountDaoImpl">-->
+<!--        &lt;!&ndash;<property name="jdbcTemplate" ref="jdbcTemplate"></property>&ndash;&gt;-->
+<!--        <property name="dataSource" ref="dataSource"></property>-->
+<!--    </bean>-->
+
+    <!--配置JdbcTemplate-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSourceOracle"></property>
+    </bean>
+    <bean id="date" class="java.util.Date"></bean>
+    <bean id="lxxUserDao" class="com.dawnrecord.dao.impl.LxxUserDaoImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+    <!-- 配置数据源-->
+    <bean id="dataSourceMysql" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/mybatis_example?serverTimezone=UTC"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="lixiaoxu"></property>
+    </bean>
+
+    <!-- 配置数据源-->
+    <bean id="dataSourceOracle" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"></property>
+        <property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521/orcl.home.langchao.com"></property>
+        <property name="username" value="admin"></property>
+        <property name="password" value="admin"></property>
+    </bean>
+</beans>
